@@ -1,0 +1,574 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#7A2E2E">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Библиотека кондитера">
+<meta name="description" content="Библиотека кондитера — образовательная платформа для начинающих кондитеров. От первого торта до первых клиентов.">
+<title>Библиотека кондитера</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect x='6' y='3' width='20' height='26' rx='3' fill='%237A2E2E'/%3E%3Crect x='9' y='3' width='3' height='26' fill='%23652424'/%3E%3Crect x='15' y='10' width='7' height='1.6' rx='.8' fill='%23FFFDF6'/%3E%3Crect x='15' y='14' width='7' height='1.6' rx='.8' fill='%23FFFDF6'/%3E%3C/svg%3E">
+<link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%23FFFDF6'/%3E%3Crect x='6' y='3' width='20' height='26' rx='3' fill='%237A2E2E'/%3E%3Crect x='9' y='3' width='3' height='26' fill='%23652424'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500;1,600&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#FFFDF6; --card:#FFFFFF;
+  --blush:#F6ECE5; --blush-deep:#EEDFD6;
+  --wine:#7A2E2E; --wine-deep:#652424; --rose:#B37070; --rose-soft:#C58686;
+  --ink:#2B2320; --muted:#6E6058; --faint:#9A8B82;
+  --line:#EAE0D7; --line-soft:#F1E9E1;
+  --ok:#5E7C54;
+  --shadow:0 8px 30px rgba(74,38,28,.10);
+  --shadow-sm:0 3px 14px rgba(74,38,28,.07);
+  --nav-h:74px;
+  --serif:"Cormorant Garamond",Georgia,serif;
+  --sans:"Manrope",-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{
+  font-family:var(--sans); color:var(--ink); background:#E9D9CE;
+  -webkit-font-smoothing:antialiased; text-rendering:optimizeLegibility;
+  background-image:radial-gradient(120% 60% at 50% 0%, #F0E2D7 0%, #E4D2C6 60%, #DDC9BC 100%);
+  min-height:100vh;
+}
+a{color:inherit;text-decoration:none}
+img{max-width:100%;display:block}
+button{font-family:inherit;cursor:pointer;border:0;background:none;color:inherit}
+
+/* ---------- App shell ---------- */
+.app{
+  max-width:440px; margin:0 auto; min-height:100vh; position:relative;
+  background:var(--paper); overflow:hidden;
+  box-shadow:0 0 0 1px rgba(122,46,46,.05), 0 24px 70px rgba(74,38,28,.28);
+}
+@media(min-width:441px){ .app{ margin:22px auto; min-height:calc(100vh - 44px); border-radius:30px } }
+
+/* ---------- Top bar ---------- */
+.bar{
+  position:sticky; top:0; z-index:40;
+  display:flex; align-items:center; justify-content:space-between;
+  padding:14px 18px 12px; padding-top:calc(14px + env(safe-area-inset-top));
+  background:rgba(255,253,246,.86); backdrop-filter:blur(14px) saturate(1.2);
+  border-bottom:1px solid var(--line-soft);
+}
+.brand{display:flex;align-items:center;gap:9px}
+.brand .mark{
+  width:26px;height:32px;border-radius:3px 6px 6px 3px;flex:none;
+  background:linear-gradient(135deg,var(--wine),var(--wine-deep));
+  box-shadow:inset 5px 0 0 rgba(255,255,255,.14), var(--shadow-sm); position:relative;
+}
+.brand .mark::after{content:"";position:absolute;left:6px;top:6px;right:4px;bottom:6px;border:1px solid rgba(255,255,255,.32);border-radius:2px}
+.brand b{font-weight:700;font-size:14px;letter-spacing:.01em}
+.brand span{display:block;font-size:9.5px;letter-spacing:.22em;color:var(--rose);font-weight:700;text-transform:uppercase;margin-top:1px}
+.bar .signin{font-size:12.5px;font-weight:600;color:var(--wine);padding:7px 13px;border:1px solid var(--line);border-radius:999px;background:var(--paper)}
+
+/* ---------- Views / scroll ---------- */
+.screen{padding-bottom:calc(var(--nav-h) + env(safe-area-inset-bottom) + 12px)}
+.view{display:none;animation:viewIn .34s ease both}
+.view.active{display:block}
+@keyframes viewIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+
+.sec{padding:26px 18px}
+.sec + .sec{padding-top:8px}
+.pad{padding-left:18px;padding-right:18px}
+
+.eyebrow{font-size:11px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--rose)}
+.h-lead{font-family:var(--serif);font-weight:700;line-height:1.08;letter-spacing:-.01em;color:var(--ink)}
+.body{font-size:14.5px;line-height:1.62;color:var(--muted)}
+.tag{display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:700;letter-spacing:.05em;color:var(--wine);background:var(--blush);border:1px solid var(--blush-deep);padding:5px 10px;border-radius:999px;text-transform:uppercase}
+
+/* buttons */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;width:100%;
+  font-weight:700;font-size:15px;padding:15px 18px;border-radius:15px;transition:transform .12s ease, box-shadow .2s ease, background .2s ease}
+.btn:active{transform:scale(.975)}
+.btn-primary{background:linear-gradient(135deg,var(--wine),var(--wine-deep));color:#fff;box-shadow:0 10px 24px rgba(122,46,46,.32)}
+.btn-ghost{background:var(--paper);color:var(--wine);border:1.5px solid var(--blush-deep)}
+.btn-row{display:flex;flex-direction:column;gap:10px;margin-top:20px}
+
+/* ---------- HERO ---------- */
+.hero{position:relative;padding:26px 18px 30px;text-align:center;overflow:hidden}
+.hero::before{content:"";position:absolute;inset:-30% -20% auto -20%;height:70%;
+  background:radial-gradient(60% 100% at 50% 0%, rgba(197,134,134,.28), rgba(197,134,134,0) 70%);pointer-events:none}
+.hero .eyebrow{position:relative}
+.hero h1{font-family:var(--serif);font-weight:700;font-size:44px;line-height:.98;letter-spacing:-.015em;margin:12px 0 0;color:var(--ink)}
+.hero h1 i{font-style:italic;color:var(--wine);display:block;font-weight:600}
+.book{position:relative;width:212px;margin:26px auto 6px;aspect-ratio:212/272;
+  border-radius:5px 16px 16px 5px;box-shadow:0 26px 50px rgba(74,38,28,.34), 0 3px 0 #d9cabe;
+  transform:rotate(-3deg);animation:float 6s ease-in-out infinite;background:var(--wine)}
+.book__cover{width:100%;height:100%;object-fit:cover;border-radius:inherit;filter:saturate(1.02)}
+.book__spine{position:absolute;left:0;top:0;bottom:0;width:26px;border-radius:5px 0 0 5px;
+  background:linear-gradient(90deg,var(--wine-deep),var(--wine));display:flex;align-items:center;justify-content:center;
+  box-shadow:inset -3px 0 6px rgba(0,0,0,.25)}
+.book__spine span{writing-mode:vertical-rl;transform:rotate(180deg);font-size:8.5px;font-weight:700;letter-spacing:.24em;color:rgba(255,255,255,.9);text-transform:uppercase;white-space:nowrap}
+.book__badge{position:absolute;right:-10px;bottom:16px;background:var(--paper);color:var(--wine);
+  font-size:10.5px;font-weight:800;letter-spacing:.06em;padding:7px 11px;border-radius:999px;box-shadow:var(--shadow);transform:rotate(3deg);text-transform:uppercase}
+@keyframes float{0%,100%{transform:rotate(-3deg) translateY(0)}50%{transform:rotate(-3deg) translateY(-9px)}}
+.hero .tagline{font-family:var(--serif);font-style:italic;font-size:22px;color:var(--wine);margin:20px 0 0;line-height:1.15}
+.hero .intro{font-size:14px;line-height:1.6;color:var(--muted);margin:12px 4px 0}
+
+/* stats */
+.stats{display:flex;gap:9px;margin-top:22px}
+.stat{flex:1;background:var(--card);border:1px solid var(--line);border-radius:16px;padding:14px 8px;box-shadow:var(--shadow-sm)}
+.stat b{display:block;font-family:var(--serif);font-weight:700;font-size:26px;color:var(--wine);line-height:1}
+.stat small{display:block;font-size:11px;color:var(--muted);margin-top:5px;font-weight:600}
+
+/* section heading block */
+.head{margin-bottom:16px}
+.head h2{font-family:var(--serif);font-weight:700;font-size:27px;line-height:1.1;margin:8px 0 0;letter-spacing:-.01em}
+.head p{font-size:13.5px;color:var(--muted);margin:7px 0 0;line-height:1.5}
+
+/* pain cards */
+.pains{display:flex;flex-direction:column;gap:11px}
+.pain{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:15px 16px;box-shadow:var(--shadow-sm);position:relative;padding-left:18px}
+.pain::before{content:"";position:absolute;left:0;top:14px;bottom:14px;width:4px;border-radius:0 4px 4px 0;background:var(--rose-soft)}
+.pain q{display:block;font-family:var(--serif);font-style:italic;font-size:18px;line-height:1.28;color:var(--ink);quotes:"«" "»"}
+.pain small{display:block;font-size:12.5px;color:var(--faint);margin-top:7px;font-weight:500}
+
+/* story */
+.story{background:linear-gradient(180deg,var(--blush),#FBF4EF);border-top:1px solid var(--line-soft);border-bottom:1px solid var(--line-soft)}
+.story .photo{border-radius:18px;overflow:hidden;box-shadow:var(--shadow);margin:4px 0 18px;border:4px solid #fff}
+.story .photo img{width:100%;aspect-ratio:16/12;object-fit:cover}
+.pull{font-family:var(--serif);font-style:italic;font-size:21px;line-height:1.3;color:var(--wine);position:relative;padding-left:26px;margin:0 0 14px}
+.pull::before{content:"“";position:absolute;left:-2px;top:-10px;font-size:52px;color:var(--rose-soft);font-family:var(--serif);line-height:1}
+.story .body p{margin:0 0 10px}
+
+/* format cards */
+.formats{display:flex;flex-direction:column;gap:13px}
+.fmt{background:var(--card);border:1px solid var(--line);border-radius:18px;overflow:hidden;box-shadow:var(--shadow-sm)}
+.fmt .img{position:relative;aspect-ratio:357/172;overflow:hidden;background:var(--blush)}
+.fmt .img img{width:100%;height:100%;object-fit:cover}
+.fmt .kind{position:absolute;left:12px;top:12px;display:inline-flex;gap:7px;align-items:center;background:rgba(43,35,32,.82);color:#fff;font-size:10.5px;font-weight:800;letter-spacing:.1em;padding:6px 10px;border-radius:999px;text-transform:uppercase;backdrop-filter:blur(4px)}
+.fmt .kind i{font-style:normal;color:var(--rose-soft);font-weight:700}
+.fmt .txt{padding:14px 16px 16px}
+.fmt .txt h3{font-family:var(--serif);font-weight:600;font-size:20px;margin:0;line-height:1.15}
+.fmt .txt p{font-size:13px;color:var(--muted);margin:6px 0 0;line-height:1.5}
+.fmt .open{display:inline-flex;align-items:center;gap:6px;margin-top:12px;font-size:13px;font-weight:700;color:var(--wine)}
+.more-note{text-align:center;font-family:var(--serif);font-style:italic;font-size:16px;color:var(--faint);margin-top:16px}
+
+/* before after */
+.ba{display:flex;flex-direction:column;gap:10px}
+.ba-row{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.ba-cell{border-radius:14px;padding:12px 13px;font-size:12.5px;line-height:1.35;font-weight:600}
+.ba-before{background:#F7EEE9;color:var(--faint)}
+.ba-after{background:linear-gradient(135deg,rgba(122,46,46,.06),rgba(197,134,134,.12));color:var(--ink);border:1px solid var(--blush-deep)}
+.ba-cell .lbl{display:block;font-size:9.5px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;margin-bottom:5px}
+.ba-before .lbl{color:var(--rose-soft)}
+.ba-after .lbl{color:var(--wine)}
+
+/* cta banner */
+.cta-band{margin:6px 18px 0;background:linear-gradient(140deg,var(--wine),var(--wine-deep));border-radius:22px;padding:26px 22px;text-align:center;color:#fff;box-shadow:0 16px 34px rgba(122,46,46,.30);position:relative;overflow:hidden}
+.cta-band::after{content:"";position:absolute;inset:auto -30% -60% -30%;height:120%;background:radial-gradient(50% 100% at 50% 0,rgba(255,255,255,.12),transparent 70%)}
+.cta-band h3{font-family:var(--serif);font-weight:700;font-size:26px;margin:0;position:relative}
+.cta-band p{font-size:13px;opacity:.85;margin:8px 0 0;position:relative}
+.cta-band .btn{margin-top:18px;background:var(--paper);color:var(--wine);position:relative;box-shadow:0 8px 20px rgba(0,0,0,.18)}
+
+/* ---------- Catalog ---------- */
+.view-head{padding:24px 18px 6px}
+.view-head .eyebrow{color:var(--rose)}
+.view-head h1{font-family:var(--serif);font-weight:700;font-size:34px;margin:8px 0 0;letter-spacing:-.01em}
+.view-head p{font-size:13.5px;color:var(--muted);margin:7px 0 0;line-height:1.5}
+.libstats{display:flex;gap:7px;flex-wrap:wrap;margin:16px 18px 4px}
+.libstats span{font-size:12px;font-weight:600;color:var(--wine);background:var(--blush);border:1px solid var(--blush-deep);padding:6px 11px;border-radius:999px}
+.chapters{display:flex;flex-direction:column;gap:10px;padding:16px 18px 4px}
+.ch{display:flex;gap:13px;align-items:flex-start;background:var(--card);border:1px solid var(--line);border-radius:16px;padding:14px 15px;box-shadow:var(--shadow-sm);transition:transform .12s ease,box-shadow .2s ease}
+.ch:active{transform:scale(.99)}
+.ch .num{flex:none;width:40px;height:40px;border-radius:12px;background:var(--blush);color:var(--wine);font-family:var(--serif);font-weight:700;font-size:20px;display:flex;align-items:center;justify-content:center;border:1px solid var(--blush-deep)}
+.ch .ci{flex:1;min-width:0}
+.ch .ci h3{font-family:var(--serif);font-weight:600;font-size:19px;margin:0;line-height:1.12}
+.ch .ci p{font-size:12.5px;color:var(--muted);margin:4px 0 0;line-height:1.45}
+.ch .meta{display:flex;align-items:center;gap:8px;margin-top:8px}
+.ch .themes{font-size:11px;font-weight:700;color:var(--wine);background:rgba(122,46,46,.07);padding:4px 9px;border-radius:999px}
+.ch .wip{font-size:10px;font-weight:800;letter-spacing:.08em;color:var(--rose);text-transform:uppercase}
+.ch .chev{flex:none;color:var(--faint);margin-top:4px}
+
+.soon-h{padding:22px 18px 4px}
+.soon-h h2{font-family:var(--serif);font-weight:700;font-size:23px;margin:0}
+.soon-h p{font-size:13px;color:var(--muted);margin:6px 0 0}
+.soon{display:flex;flex-direction:column;gap:9px;padding:12px 18px 4px}
+.soon-item{display:flex;align-items:center;gap:12px;background:var(--card);border:1px dashed var(--blush-deep);border-radius:14px;padding:13px 14px}
+.soon-item .dot{flex:none;width:9px;height:9px;border-radius:50%;background:var(--rose-soft);box-shadow:0 0 0 4px rgba(197,134,134,.18)}
+.soon-item .si{flex:1}
+.soon-item .si b{display:block;font-size:14px;font-weight:600;color:var(--ink)}
+.soon-item .si small{font-size:11.5px;color:var(--faint)}
+.soon-item .when{font-size:10.5px;font-weight:800;letter-spacing:.06em;color:var(--rose);text-transform:uppercase;text-align:right;flex:none}
+
+/* ---------- Reviews ---------- */
+.reviews{display:flex;flex-direction:column;gap:13px;padding:16px 18px 4px}
+.rev{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:18px 17px;box-shadow:var(--shadow-sm);position:relative}
+.rev .q{content:"“";font-family:var(--serif);font-size:44px;color:var(--blush-deep);line-height:.6;height:22px}
+.rev blockquote{font-family:var(--serif);font-style:italic;font-size:18px;line-height:1.35;color:var(--ink);margin:6px 0 14px}
+.rev .who{display:flex;align-items:center;gap:11px}
+.rev .av{flex:none;width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,var(--rose),var(--wine));color:#fff;font-weight:700;font-size:16px;display:flex;align-items:center;justify-content:center}
+.rev .who b{font-size:14px;font-weight:700;display:block}
+.rev .who small{font-size:11.5px;color:var(--faint)}
+.rev .result{margin-top:13px;display:inline-flex;align-items:center;gap:7px;font-size:12px;font-weight:700;color:var(--ok);background:rgba(94,124,84,.09);padding:8px 12px;border-radius:999px}
+.free-note{margin:18px 18px 0;text-align:center;background:var(--blush);border:1px solid var(--blush-deep);border-radius:16px;padding:16px;font-family:var(--serif);font-style:italic;font-size:16px;color:var(--wine)}
+
+/* ---------- Access ---------- */
+.price{margin:16px 18px 0;background:var(--card);border:1px solid var(--line);border-radius:22px;box-shadow:var(--shadow);overflow:hidden}
+.price .top{background:linear-gradient(140deg,var(--wine),var(--wine-deep));color:#fff;padding:20px 20px 18px}
+.price .top .k{font-size:10.5px;font-weight:800;letter-spacing:.14em;opacity:.8;text-transform:uppercase}
+.price .top h3{font-family:var(--serif);font-weight:700;font-size:25px;margin:6px 0 0}
+.price .list{padding:16px 18px 4px}
+.price li{display:flex;gap:11px;align-items:flex-start;padding:9px 0;font-size:13.5px;line-height:1.4;color:var(--ink);list-style:none}
+.price ul{margin:0;padding:0}
+.price .ck{flex:none;width:20px;height:20px;border-radius:50%;background:rgba(94,124,84,.14);color:var(--ok);display:flex;align-items:center;justify-content:center;margin-top:1px}
+.price .total{display:flex;align-items:baseline;justify-content:space-between;padding:14px 20px;border-top:1px solid var(--line);margin-top:8px}
+.price .total .k{font-size:11px;font-weight:800;letter-spacing:.12em;color:var(--faint)}
+.price .total b{font-family:var(--serif);font-weight:700;font-size:34px;color:var(--wine)}
+.price .foot{padding:0 20px 20px}
+.price .foot .btn{margin-top:2px}
+.price .foot small{display:block;text-align:center;font-size:11.5px;color:var(--faint);margin-top:11px}
+
+.faq{padding:24px 18px 8px}
+.faq h2{font-family:var(--serif);font-weight:700;font-size:26px;margin:0 0 14px}
+.qa{background:var(--card);border:1px solid var(--line);border-radius:14px;margin-bottom:9px;overflow:hidden}
+.qa summary{list-style:none;display:flex;align-items:center;gap:12px;padding:15px 16px;font-weight:600;font-size:14px;color:var(--ink)}
+.qa summary::-webkit-details-marker{display:none}
+.qa summary .n{font-family:var(--serif);font-weight:700;color:var(--rose);font-size:16px;flex:none}
+.qa summary .plus{margin-left:auto;flex:none;color:var(--wine);transition:transform .25s ease;font-size:20px;line-height:1}
+.qa[open] summary .plus{transform:rotate(45deg)}
+.qa .ans{padding:0 16px 16px 42px;font-size:13.5px;line-height:1.55;color:var(--muted)}
+
+.foot{background:linear-gradient(180deg,#FBF4EF,var(--blush));border-top:1px solid var(--line-soft);padding:26px 20px;margin-top:14px}
+.foot .brand2{display:flex;align-items:center;gap:9px;margin-bottom:10px}
+.foot .brand2 .mark{width:22px;height:27px;border-radius:3px 5px 5px 3px;background:linear-gradient(135deg,var(--wine),var(--wine-deep))}
+.foot .brand2 b{font-family:var(--serif);font-size:19px;font-weight:700}
+.foot p{font-size:12.5px;color:var(--muted);line-height:1.55;margin:0 0 16px}
+.foot .cols{display:flex;gap:14px;flex-wrap:wrap}
+.foot .col{flex:1;min-width:96px}
+.foot .col h4{font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--faint);margin:0 0 8px;font-weight:800}
+.foot .col a{display:block;font-size:12.5px;color:var(--ink);padding:3px 0;font-weight:500}
+.foot .legal{margin-top:18px;padding-top:14px;border-top:1px solid var(--blush-deep);font-size:11px;color:var(--faint);line-height:1.5}
+
+/* ---------- Bottom nav ---------- */
+.nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:440px;z-index:50;
+  display:flex;justify-content:space-around;
+  background:rgba(255,253,246,.92);backdrop-filter:blur(16px) saturate(1.3);
+  border-top:1px solid var(--line);padding:8px 6px calc(8px + env(safe-area-inset-bottom));}
+@media(min-width:441px){.nav{bottom:22px;border-radius:0 0 30px 30px}}
+.tab{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;padding:6px 2px;color:var(--faint);border-radius:12px;transition:color .2s ease}
+.tab svg{width:23px;height:23px;stroke-width:1.9}
+.tab span{font-size:10.5px;font-weight:700;letter-spacing:.01em}
+.tab.active{color:var(--wine)}
+.tab.active svg{stroke-width:2.2}
+.tab .ind{width:5px;height:5px;border-radius:50%;background:var(--wine);opacity:0;transition:opacity .2s}
+.tab.active .ind{opacity:1}
+
+/* reveal */
+.reveal{opacity:0;transform:translateY(14px);transition:opacity .6s ease, transform .6s ease}
+.reveal.in{opacity:1;transform:none}
+
+/* toast */
+.toast{position:fixed;left:50%;bottom:calc(var(--nav-h) + 20px);transform:translate(-50%,20px);z-index:80;
+  background:var(--ink);color:#fff;font-size:13px;font-weight:600;padding:12px 18px;border-radius:999px;box-shadow:0 10px 30px rgba(0,0,0,.3);
+  opacity:0;pointer-events:none;transition:opacity .3s ease, transform .3s ease;max-width:88%}
+.toast.show{opacity:1;transform:translate(-50%,0)}
+
+@media(prefers-reduced-motion:reduce){
+  *{animation:none!important;transition:none!important}
+  .reveal{opacity:1;transform:none}
+}
+:focus-visible{outline:2.5px solid var(--wine);outline-offset:2px;border-radius:6px}
+</style>
+</head>
+<body>
+<div class="app">
+
+  <!-- Top bar -->
+  <header class="bar">
+    <div class="brand">
+      <div class="mark"></div>
+      <div><b>Библиотека кондитера</b><span>DARI_TART</span></div>
+    </div>
+    <button class="signin" data-toast="Демо · вход не подключён">Войти</button>
+  </header>
+
+  <main class="screen">
+
+    <!-- ============ HOME ============ -->
+    <section class="view active" id="home">
+
+      <div class="hero">
+        <p class="eyebrow">Автор · Dari_tart</p>
+        <h1>Библиотека<i>кондитера</i></h1>
+        <div class="book">
+          <div class="book__spine"><span>Библиотека кондитера</span></div>
+          <img class="book__cover" src="uploads/pasted-1784360189137-0.png" alt="Автор украшает торт">
+          <span class="book__badge">5 лет опыта</span>
+        </div>
+        <p class="tagline">От первого торта —<br>до первых клиентов</p>
+        <p class="intro">Видео, конспекты и удобные шаблоны, разложенные по продуманным разделам. Учись в своём темпе и всегда знай, где найти нужный ответ.</p>
+        <div class="stats">
+          <div class="stat"><b>13</b><small>разделов</small></div>
+          <div class="stat"><b>95+</b><small>материалов</small></div>
+          <div class="stat"><b>5 лет</b><small>опыта</small></div>
+        </div>
+        <div class="btn-row">
+          <button class="btn btn-primary" data-goto="access">Получить доступ · 7 000 ₽</button>
+          <button class="btn btn-ghost" data-goto="catalog">Смотреть разделы</button>
+        </div>
+      </div>
+
+      <!-- Pains -->
+      <div class="sec reveal">
+        <div class="head">
+          <p class="eyebrow">Знакомо?</p>
+          <h2>Каждый кондитер начинает с одних и тех же вопросов</h2>
+        </div>
+        <div class="pains">
+          <div class="pain"><q>Куплю ещё один инструмент и… наверное, тогда начну</q><small>Покупки не помогают, если нет системы</small></div>
+          <div class="pain"><q>Называю цену — и сразу стыдно. Скидываю</q><small>Страшно потерять клиента и показаться «дорогой»</small></div>
+          <div class="pain"><q>Не знаю, что купить в первую очередь</q><small>Сложно разобраться в объёме информации</small></div>
+          <div class="pain"><q>Хочу зарабатывать тортами, но не знаю, как говорить про цену</q><small>Нет понимания, как выстроить диалог с клиентом</small></div>
+        </div>
+      </div>
+
+      <!-- Story -->
+      <div class="sec story reveal">
+        <div class="head">
+          <p class="eyebrow">Даша · Волгоград</p>
+          <h2>Я прошла через всё это сама</h2>
+        </div>
+        <div class="photo"><img src="assets/dasha-cover.png" alt="Даша украшает торт"></div>
+        <p class="pull">Творожный сыр заказывала из города за 300 км</p>
+        <div class="body">
+          <p>Мне было 14, когда я испекла первый торт на заказ в своём посёлке. Я не знала, как считать себестоимость, боялась называть цену и тратила деньги на ненужный инвентарь.</p>
+          <p>За 5 лет я нашла ответы на все эти вопросы — через ошибки, практику и сотни часов работы. Библиотека кондитера — это всё, что я хотела бы иметь, когда начинала.</p>
+        </div>
+      </div>
+
+      <!-- Formats -->
+      <div class="sec reveal">
+        <div class="head">
+          <p class="eyebrow">Как устроена библиотека</p>
+          <h2>Три формата материалов</h2>
+          <p>Каждый — для своей задачи.</p>
+        </div>
+        <div class="formats">
+          <div class="fmt">
+            <div class="img"><span class="kind">Гайд <i>· 8 мин</i></span><img src="assets/blk5-guide.png" alt="Гайд"></div>
+            <div class="txt"><h3>Почему крем-чиз плывёт</h3><p>Все причины — температура, жирность, перебитые сливки. Каждая с решением.</p><span class="open">Открыть →</span></div>
+          </div>
+          <div class="fmt">
+            <div class="img"><span class="kind">Видео <i>· 12 мин</i></span><img src="assets/blk5-video.png" alt="Видео"></div>
+            <div class="txt"><h3>Миксер и поворотный столик</h3><p>Разница между моделями, на что смотреть при выборе, минимальный бюджет.</p><span class="open">Открыть →</span></div>
+          </div>
+          <div class="fmt">
+            <div class="img"><span class="kind">Шаблон</span><img src="assets/blk5-tpl.png" alt="Шаблон"></div>
+            <div class="txt"><h3>Таблица расчёта себестоимости</h3><p>Готовая таблица, которую можно использовать сразу — считай реальную стоимость каждого торта.</p><span class="open">Открыть →</span></div>
+          </div>
+        </div>
+        <p class="more-note">…и ещё 92 материала внутри</p>
+      </div>
+
+      <!-- Before / After -->
+      <div class="sec reveal">
+        <div class="head">
+          <p class="eyebrow">Результат</p>
+          <h2>Что меняется</h2>
+        </div>
+        <div class="ba">
+          <div class="ba-row"><div class="ba-cell ba-before"><span class="lbl">Было</span>Трачу деньги на ненужный инвентарь</div><div class="ba-cell ba-after"><span class="lbl">Стало</span>Знаю точно, что купить на старте</div></div>
+          <div class="ba-row"><div class="ba-cell ba-before"><span class="lbl">Было</span>Боюсь называть цену — скидываю</div><div class="ba-cell ba-after"><span class="lbl">Стало</span>Считаю себестоимость и называю цену уверенно</div></div>
+          <div class="ba-row"><div class="ba-cell ba-before"><span class="lbl">Было</span>Не знаю, как найти клиентов</div><div class="ba-cell ba-after"><span class="lbl">Стало</span>Есть система от Instagram до первого заказа</div></div>
+          <div class="ba-row"><div class="ba-cell ba-before"><span class="lbl">Было</span>Каждый торт — стресс и паника</div><div class="ba-cell ba-after"><span class="lbl">Стало</span>Понимаю, что делать на каждом этапе</div></div>
+          <div class="ba-row"><div class="ba-cell ba-before"><span class="lbl">Было</span>Смотрю 100 видео и всё равно непонятно</div><div class="ba-cell ba-after"><span class="lbl">Стало</span>Всё в одном месте, структурировано</div></div>
+          <div class="ba-row"><div class="ba-cell ba-before"><span class="lbl">Было</span>Работаю за копейки или в минус</div><div class="ba-cell ba-after"><span class="lbl">Стало</span>Знаю свою себестоимость и зарабатываю</div></div>
+        </div>
+      </div>
+
+      <div class="cta-band reveal">
+        <h3>Готова начать путь?</h3>
+        <p>Доступ навсегда, без подписок. Все обновления включены.</p>
+        <button class="btn" data-goto="access">Получить доступ · 7 000 ₽</button>
+      </div>
+      <div style="height:26px"></div>
+    </section>
+
+    <!-- ============ CATALOG ============ -->
+    <section class="view" id="catalog">
+      <div class="view-head">
+        <p class="eyebrow">Путь от первого торта до клиентов</p>
+        <h1>Все разделы</h1>
+        <p>Выбери раздел и изучай в своём темпе.</p>
+      </div>
+      <div class="libstats"><span>95 материалов</span><span>26 видео</span><span>14 шаблонов</span><span>13 разделов</span></div>
+      <div class="chapters" id="chapters"></div>
+
+      <div class="soon-h">
+        <h2>Скоро в библиотеке</h2>
+        <p>Уже работаем над этими материалами.</p>
+      </div>
+      <div class="soon">
+        <div class="soon-item"><span class="dot"></span><div class="si"><b>Шоколадный ганаш: пять базовых пропорций</b><small>Гайд</small></div><span class="when">Август<br>2026</span></div>
+        <div class="soon-item"><span class="dot"></span><div class="si"><b>Как фотографировать торты на телефон</b><small>Видео</small></div><span class="when">Август<br>2026</span></div>
+        <div class="soon-item"><span class="dot"></span><div class="si"><b>Шаблон договора с клиентом</b><small>Шаблон</small></div><span class="when">Сентябрь<br>2026</span></div>
+      </div>
+      <div style="height:26px"></div>
+    </section>
+
+    <!-- ============ REVIEWS ============ -->
+    <section class="view" id="reviews">
+      <div class="view-head">
+        <p class="eyebrow">Отзывы</p>
+        <h1>Что говорят те, кто уже внутри</h1>
+        <p>Реальные истории начинающих кондитеров.</p>
+      </div>
+      <div class="reviews">
+        <div class="rev">
+          <div class="q">“</div>
+          <blockquote>Полгода смотрела ролики на YouTube и ничего не понимала. Здесь за неделю разобралась с себестоимостью и взяла первый заказ.</blockquote>
+          <div class="who"><span class="av">А</span><div><b>Аня</b><small>24 года · Москва</small></div></div>
+          <span class="result">↑ Первый заказ через 10 дней</span>
+        </div>
+        <div class="rev">
+          <div class="q">“</div>
+          <blockquote>Даже не ожидала, что будет так понятно и структурировано. Перечитываю разделы по несколько раз — каждый раз нахожу что-то новое.</blockquote>
+          <div class="who"><span class="av">М</span><div><b>Маша</b><small>19 лет · Екатеринбург</small></div></div>
+          <span class="result">↑ Подняла ценник в 2 раза — клиенты не ушли</span>
+        </div>
+        <div class="rev">
+          <div class="q">“</div>
+          <blockquote>Раздел про инвентарь сэкономил мне кучу денег — я уже хотела купить кучу ненужного. Теперь знаю точно, что брать в первую очередь.</blockquote>
+          <div class="who"><span class="av">О</span><div><b>Оля</b><small>31 год · Краснодар</small></div></div>
+          <span class="result">↑ Сэкономила 8 000 ₽ на старте</span>
+        </div>
+      </div>
+      <div class="free-note">Библиотека живая — всё новое входит в твой доступ бесплатно.</div>
+      <div style="height:26px"></div>
+    </section>
+
+    <!-- ============ ACCESS ============ -->
+    <section class="view" id="access">
+      <div class="view-head">
+        <p class="eyebrow">Доступ навсегда</p>
+        <h1>Получи доступ<br>к библиотеке</h1>
+      </div>
+
+      <div class="price">
+        <div class="top"><div class="k">Чек · доступ навсегда</div><h3>Библиотека кондитера</h3></div>
+        <div class="list">
+          <ul>
+            <li><span class="ck">✓</span>95 материалов: гайды, видео, шаблоны и чеклисты</li>
+            <li><span class="ck">✓</span>13 разделов — от старта до Instagram</li>
+            <li><span class="ck">✓</span>Поиск по всей библиотеке</li>
+            <li><span class="ck">✓</span>Личный кабинет с закладками и заметками</li>
+            <li><span class="ck">✓</span>Путь кондитера с чекпоинтами</li>
+            <li><span class="ck">✓</span>Все новые материалы — бесплатно навсегда</li>
+          </ul>
+        </div>
+        <div class="total"><span class="k">ИТОГО</span><b>7 000 ₽</b></div>
+        <div class="foot">
+          <button class="btn btn-primary" data-toast="Демо · оплата через ЮКассу не подключена">Получить доступ</button>
+          <small>Оплата через ЮКассу · доступ сразу · без подписок</small>
+        </div>
+      </div>
+
+      <div class="faq">
+        <h2>Частые вопросы</h2>
+        <details class="qa"><summary><span class="n">01</span>Доступ действительно навсегда?<span class="plus">+</span></summary><div class="ans">Да. Один раз оплатила — пользуешься всегда. Никаких подписок и повторных платежей.</div></details>
+        <details class="qa"><summary><span class="n">02</span>Подойдёт, если я совсем новичок?<span class="plus">+</span></summary><div class="ans">Именно для тебя. Библиотека начинается с раздела «Старт» — там всё с нуля, без лишних слов.</div></details>
+        <details class="qa"><summary><span class="n">03</span>Когда получу доступ после оплаты?<span class="plus">+</span></summary><div class="ans">Сразу. После оплаты на твой email придёт письмо с кодом входа — это займёт меньше минуты.</div></details>
+        <details class="qa"><summary><span class="n">04</span>Будут ли добавляться новые материалы?<span class="plus">+</span></summary><div class="ans">Да, библиотека живая — новые гайды и видео добавляются регулярно. Все обновления включены в твой доступ бесплатно.</div></details>
+        <details class="qa"><summary><span class="n">05</span>Есть ли возврат, если не понравится?<span class="plus">+</span></summary><div class="ans">Напиши в Instagram @dari_tart — разберёмся.</div></details>
+        <details class="qa"><summary><span class="n">06</span>Чем это отличается от курсов?<span class="plus">+</span></summary><div class="ans">Курс — это поток с дедлайнами и домашками. Библиотека — инструмент, к которому возвращаешься, когда нужно. Изучаешь в своём темпе и открываешь нужный раздел в любой момент.</div></details>
+      </div>
+
+      <footer class="foot">
+        <div class="brand2"><div class="mark"></div><b>Библиотека кондитера</b></div>
+        <p>Образовательная платформа для начинающих кондитеров. Всё, что нужно — собрано в одном месте.</p>
+        <div class="cols">
+          <div class="col"><h4>Разделы</h4><a data-goto="home">Что внутри</a><a data-goto="reviews">Отзывы</a><a data-goto="access">Вопросы</a></div>
+          <div class="col"><h4>Документы</h4><a data-toast="Демо-документ">Политика конфиденциальности</a><a data-toast="Демо-документ">Договор оферты</a></div>
+        </div>
+        <div class="legal">ИП / Самозанятый [имя] · ИНН [номер]<br>© 2026 Библиотека кондитера</div>
+      </footer>
+    </section>
+
+  </main>
+
+  <!-- Bottom nav -->
+  <nav class="nav">
+    <button class="tab active" data-view="home"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10.5 12 4l9 6.5"/><path d="M5 9.5V20h14V9.5"/><path d="M9.5 20v-5h5v5"/></svg><span>Главная</span><span class="ind"></span></button>
+    <button class="tab" data-view="catalog"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="7" height="7" rx="1.5"/><rect x="13" y="4" width="7" height="7" rx="1.5"/><rect x="4" y="13" width="7" height="7" rx="1.5"/><rect x="13" y="13" width="7" height="7" rx="1.5"/></svg><span>Разделы</span><span class="ind"></span></button>
+    <button class="tab" data-view="reviews"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3.5l2.4 5 5.4.6-4 3.7 1.1 5.3L12 21l-4.9-2.9 1.1-5.3-4-3.7 5.4-.6z"/></svg><span>Отзывы</span><span class="ind"></span></button>
+    <button class="tab" data-view="access"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="8" r="4"/><path d="M11 11l8 8"/><path d="M16 16l2-2"/><path d="M18.5 13.5l2 2"/></svg><span>Доступ</span><span class="ind"></span></button>
+  </nav>
+
+  <div class="toast" id="toast"></div>
+</div>
+
+<script>
+(function(){
+  // ---- Catalog data ----
+  var chapters = [
+    ["01","Старт","С чего начать путь кондитера: настрой, цели и первые шаги.","5 тем",false],
+    ["02","Инвентарь","Какая техника и формы нужны на старте, а с чем можно подождать.","6 тем",false],
+    ["03","Ингредиенты","Базовые продукты кондитера: как выбирать и чем заменять.","5 тем",false],
+    ["04","Бисквиты и коржи","Основы бисквитов и коржей: от классики до устойчивых рецептов.","5 тем",false],
+    ["05","Кремы","Кремы для прослойки и выравнивания: текстуры, баланс, стабильность.","5 тем",false],
+    ["06","Начинки","Конфи, кули, ганаши и другие начинки для вкуса и структуры.","5 тем",false],
+    ["07","Сборка и выравнивание","Как собрать торт ровно и аккуратно — шаг за шагом.","5 тем",false],
+    ["08","Декор","Аккуратное оформление: подтёки, ягоды, шоколад и простые акценты.","5 тем",false],
+    ["09","Готовые торты","Собранные рецепты тортов от начала до подачи.","5 тем",false],
+    ["10","Хранение, упаковка и доставка","Как сохранить торт свежим и довезти его целым.","5 тем",false],
+    ["11","Ценообразование","Как считать себестоимость и назначать честную цену.","5 тем",false],
+    ["12","Работа с клиентами","Общение, заказы и отзывы: как выстраивать доверие.","5 тем",false],
+    ["13","Шаблоны для Сториз","Готовые макеты для витрины профиля — раздел в работе.","1 тема",true]
+  ];
+  var chev='<svg class="chev" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg>';
+  var html='';
+  chapters.forEach(function(c){
+    html+='<div class="ch"><div class="num">'+c[0]+'</div><div class="ci"><h3>'+c[1]+'</h3><p>'+c[2]+'</p>'+
+      '<div class="meta"><span class="themes">'+c[3]+'</span>'+(c[4]?'<span class="wip">В работе</span>':'')+'</div></div>'+chev+'</div>';
+  });
+  document.getElementById('chapters').innerHTML=html;
+
+  // ---- Tab switching ----
+  var views=document.querySelectorAll('.view');
+  var tabs=document.querySelectorAll('.tab');
+  function show(id){
+    var found=false;
+    views.forEach(function(v){var a=v.id===id;v.classList.toggle('active',a);found=found||a;});
+    if(!found) return;
+    tabs.forEach(function(t){t.classList.toggle('active',t.getAttribute('data-view')===id);});
+    window.scrollTo({top:0,behavior:'auto'});
+    // re-arm reveals for the newly shown view
+    requestAnimationFrame(armReveals);
+  }
+  tabs.forEach(function(t){t.addEventListener('click',function(){show(t.getAttribute('data-view'));});});
+  document.querySelectorAll('[data-goto]').forEach(function(b){b.addEventListener('click',function(){show(b.getAttribute('data-goto'));});});
+
+  // ---- Toast ----
+  var toast=document.getElementById('toast'), tt;
+  document.querySelectorAll('[data-toast]').forEach(function(b){
+    b.addEventListener('click',function(){
+      toast.textContent=b.getAttribute('data-toast');
+      toast.classList.add('show'); clearTimeout(tt);
+      tt=setTimeout(function(){toast.classList.remove('show');},2200);
+    });
+  });
+
+  // ---- Scroll reveal ----
+  var io=null;
+  if('IntersectionObserver' in window){
+    io=new IntersectionObserver(function(entries){
+      entries.forEach(function(e){ if(e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target);} });
+    },{threshold:.12, rootMargin:'0px 0px -8% 0px'});
+  }
+  function armReveals(){
+    document.querySelectorAll('.view.active .reveal:not(.in)').forEach(function(el){
+      if(io){io.observe(el);} else {el.classList.add('in');}
+    });
+  }
+  armReveals();
+})();
+</script>
+</body>
+</html>
