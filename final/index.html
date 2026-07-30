@@ -56,8 +56,10 @@
     @keyframes boliRise{from{opacity:0;transform:translateY(130px)}to{opacity:1;transform:translateY(0)}}
     @keyframes boliBubble{from{opacity:0;transform:translateY(18px) scale(.9)}to{opacity:1;transform:translateY(0) scale(1)}}
     @keyframes heroBookFloat{0%,100%{transform:rotate(-3deg) translateY(0)}50%{transform:rotate(-3deg) translateY(-10px)}}
-    .rev{opacity:.14;transform:translateY(24px) scale(.985);transition:opacity .55s ease,transform .6s cubic-bezier(.22,.61,.36,1);will-change:opacity,transform}
+    .rev{opacity:0;transform:translateY(44px);transition:opacity .85s cubic-bezier(.22,.61,.36,1),transform .85s cubic-bezier(.22,.61,.36,1)}
     .rev.in{opacity:1;transform:none}
+    section.rev.dc-idle *{animation-play-state:paused!important}
+    @media (prefers-reduced-motion:reduce){.rev{transition:none!important;opacity:1!important;transform:none!important}}
     #fullScroll{scrollbar-width:none}
     #fullScroll::-webkit-scrollbar{display:none}
     .eCard{transition:opacity .22s ease,transform .22s ease,box-shadow .22s ease}
@@ -185,7 +187,7 @@
             
             <div style="padding:24px 16px 30px">
               <div style="text-align:center"><h2 style="margin:0;font-family:'Cormorant Garamond',serif;font-weight:700;font-size:24px;line-height:1.14;color:#2B2320">Каждый начинающий кондитер</h2><div style="font-family:'Cormorant Garamond',serif;font-style:italic;font-size:22px;line-height:1.12;color:#cfa3a0;margin-top:3px">начинает с одних и тех же вопросов</div></div>
-              <div id="boliStage2" style="position:relative;height:500px;margin-top:20px;display:flex;justify-content:center;align-items:flex-start;padding-top:90px;overflow:hidden">
+              <div id="boliStage2" style="position:relative;height:415px;margin-top:14px;display:flex;justify-content:center;align-items:flex-start;padding-top:84px;overflow:hidden">
                 <img src="assets/boli-hero.png" alt="Начинающий кондитер разводит руками" style="width:205px;height:auto;filter:drop-shadow(0 16px 26px rgba(97,37,37,.32));animation:boliRise .9s cubic-bezier(.22,.61,.36,1) .12s both">
                 <div style="position:absolute;left:104px;top:24px;rotate:-3deg;font-family:'Cormorant Garamond',serif;font-style:italic;font-weight:600;font-size:14px;color:#2B2320;background:#f8e6e6;padding:10px 16px;border-radius:46% 54% 56% 44%/54% 46% 54% 46%;box-shadow:0 9px 20px -9px rgba(97,37,37,.3);white-space:nowrap;animation:boliBubble .55s ease .55s both">Я точно вывезу?</div>
                 <div style="position:absolute;left:8px;top:76px;rotate:-5deg;width:122px;text-align:center;line-height:1.12;font-family:'Cormorant Garamond',serif;font-style:italic;font-weight:600;font-size:14px;color:#2B2320;background:#f8e6e6;padding:10px 15px;border-radius:48% 52% 54% 46%/56% 44% 56% 44%;box-shadow:0 9px 20px -9px rgba(97,37,37,.3);animation:boliBubble .55s ease .7s both">И как мне с этим справится?</div>
@@ -284,7 +286,7 @@
                 </div>
                 <span style="font:700 11px Manrope,sans-serif;letter-spacing:.14em;color:#6E6058">ПОСЛЕ</span>
               </div>
-              <div style="position:relative;height:500px;margin-top:14px;overflow:hidden">
+              <div style="position:relative;height:430px;margin-top:12px;overflow:hidden">
                 <div id="afSad" style="position:absolute;inset:0;transition:opacity .45s ease;opacity:1">
                   <img src="assets/after-sad.png" alt="Кондитер расстроена — торт треснул" draggable="false" style="position:absolute;left:50%;bottom:40px;transform:translateX(-50%);width:212px;height:auto;filter:drop-shadow(0 16px 26px rgba(97,37,37,.32));-webkit-user-drag:none;pointer-events:none">
                   <div data-bub="boliBubble .5s ease .1s both" style="position:absolute;left:116px;top:6px;width:122px;text-align:center;rotate:-3deg;font-family:'Cormorant Garamond',serif;font-style:italic;font-weight:600;font-size:13px;line-height:1.14;color:#2B2320;background:#f8e6e6;padding:9px 13px;border-radius:47% 53% 55% 45%/54% 46% 54% 46%;box-shadow:0 9px 20px -9px rgba(97,37,37,.3);animation:boliBubble .5s ease .1s both">Не знаю как всё выстроить</div>
@@ -518,7 +520,13 @@ class Component extends DCLogic {
         revs.forEach(function(r){ io.observe(r); });
       } else { revs.forEach(function(r){ r.classList.add('in'); }); }
     })();
-    var boliImg = document.querySelector('img[src*="boli-hero"]');
+    (function(){
+      var secs = Array.prototype.slice.call(document.querySelectorAll('section.rev'));
+      if(secs.length && 'IntersectionObserver' in window){
+        var ioIdle = new IntersectionObserver(function(es){ es.forEach(function(en){ en.target.classList.toggle('dc-idle', !en.isIntersecting); }); }, { rootMargin: '320px 0px 320px 0px', threshold: 0 });
+        secs.forEach(function(s){ ioIdle.observe(s); });
+      }
+    })();
     if(boliImg){
       var boliCanvas = boliImg.parentElement;
       var items = Array.prototype.slice.call(boliCanvas.querySelectorAll('[style*="boliRise"],[style*="boliBubble"]')).map(function(el){ return { el: el, anim: el.style.animation }; });
@@ -618,9 +626,9 @@ class Component extends DCLogic {
     var v4c = vnutri[v4Sel] || vnutri[0];
     const v4cur = { img: v4c.img, title: v4c.title, count: v4c.count, desc: v4c.desc, nLabel: 'РАЗДЕЛ ' + v4c.n, pos: (v4Sel + 1) + ' / ' + vnutri.length };
     var selfAfter = this;
-    const afStart = function(e){ var t = e.currentTarget; t.__drag = true; if(e.cancelable) e.preventDefault(); try{ t.setPointerCapture(e.pointerId); }catch(_){} var k = (t.closest('[data-afblk]')||document).querySelector('#afKnob'); if(k) k.style.transition = 'none'; };
-    const afMove = function(e){ var t = e.currentTarget; if(!t.__drag) return; var r = t.getBoundingClientRect(); var max = r.width - 32; var p = Math.max(0, Math.min(max, e.clientX - r.left - 16)); var k = (t.closest('[data-afblk]')||document).querySelector('#afKnob'); if(k) k.style.transform = 'translateX(' + p + 'px)'; };
-    const afEnd = function(e){ var t = e.currentTarget; if(!t.__drag) return; t.__drag = false; var cont = t.closest('[data-afblk]'); var k = (cont||document).querySelector('#afKnob'); if(k) k.style.transition = 'transform .28s cubic-bezier(.2,.7,.2,1)'; var r = t.getBoundingClientRect(); selfAfter.afterSet((e.clientX - r.left) > r.width / 2, cont); };
+    const afStart = function(e){ var t = e.currentTarget; t.__drag = true; t.__moved = false; if(e.cancelable) e.preventDefault(); try{ t.setPointerCapture(e.pointerId); }catch(_){} var k = (t.closest('[data-afblk]')||document).querySelector('#afKnob'); if(k) k.style.transition = 'none'; };
+    const afMove = function(e){ var t = e.currentTarget; if(!t.__drag) return; t.__moved = true; var r = t.getBoundingClientRect(); var max = r.width - 32; var p = Math.max(0, Math.min(max, e.clientX - r.left - 16)); var k = (t.closest('[data-afblk]')||document).querySelector('#afKnob'); if(k) k.style.transform = 'translateX(' + p + 'px)'; };
+    const afEnd = function(e){ var t = e.currentTarget; if(!t.__drag) return; t.__drag = false; var cont = t.closest('[data-afblk]'); var k = (cont||document).querySelector('#afKnob'); if(k) k.style.transition = 'transform .28s cubic-bezier(.2,.7,.2,1)'; var r = t.getBoundingClientRect(); var on; if(t.__moved){ on = (e.clientX - r.left) > r.width / 2; } else { var sd = (cont||document).querySelector('#afSad'); on = !(sd && sd.__on); } selfAfter.afterSet(on, cont); };
     var selfSwipe = this;
     const v4Down = function(e){ var el = e.currentTarget; selfSwipe._v4d = { sx: e.clientX, sy: e.clientY, dg: true, moved: false, el: el }; el.style.cursor = 'grabbing'; el.style.transition = 'none'; if(e.cancelable) e.preventDefault(); try{ el.setPointerCapture(e.pointerId); }catch(_){} };
     const v4Move = function(e){ var d = selfSwipe._v4d; if(!d || !d.dg) return; var dx = e.clientX - d.sx, dy = e.clientY - d.sy; if(!d.moved && Math.abs(dx) <= Math.abs(dy)) return; if(Math.abs(dx) > 5){ d.moved = true; if(e.cancelable) e.preventDefault(); d.el.style.transform = 'translateX(' + (dx * 0.35).toFixed(1) + 'px)'; d.el.style.opacity = (1 - Math.min(0.22, Math.abs(dx) / 900)).toFixed(3); } };
