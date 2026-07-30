@@ -56,10 +56,9 @@
     @keyframes boliRise{from{opacity:0;transform:translateY(130px)}to{opacity:1;transform:translateY(0)}}
     @keyframes boliBubble{from{opacity:0;transform:translateY(18px) scale(.9)}to{opacity:1;transform:translateY(0) scale(1)}}
     @keyframes heroBookFloat{0%,100%{transform:rotate(-3deg) translateY(0)}50%{transform:rotate(-3deg) translateY(-10px)}}
-    .rev{opacity:0;transform:translateY(44px);transition:opacity .85s cubic-bezier(.22,.61,.36,1),transform .85s cubic-bezier(.22,.61,.36,1)}
-    .rev.in{opacity:1;transform:none}
+    .rev{opacity:1}
     section.rev.dc-idle *{animation-play-state:paused!important}
-    @media (prefers-reduced-motion:reduce){.rev{transition:none!important;opacity:1!important;transform:none!important}}
+    @media (prefers-reduced-motion:reduce){.rev{opacity:1!important}}
     #fullScroll{scrollbar-width:none}
     #fullScroll::-webkit-scrollbar{display:none}
     .eCard{transition:opacity .22s ease,transform .22s ease,box-shadow .22s ease}
@@ -515,24 +514,29 @@ class Component extends DCLogic {
     (function(){
       var revs = Array.prototype.slice.call(document.querySelectorAll('.rev'));
       if(!revs.length) return;
-      function check(){
+      if(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches){ revs.forEach(function(el){ el.style.opacity = '1'; }); return; }
+      var BAND = 0.22;                       // fade over 22% of the viewport at each edge
+      function ease(p){ return p <= 0 ? 0 : p >= 1 ? 1 : p * p * (3 - 2 * p); }
+      var rects = [];
+      function update(){
         var vh = window.innerHeight || document.documentElement.clientHeight;
-        for(var i = revs.length - 1; i >= 0; i--){
-          var r = revs[i].getBoundingClientRect();
-          if(r.top < vh * 0.86 && r.bottom > 0){ revs[i].classList.add('in'); revs.splice(i, 1); }
+        var edge = vh * BAND, i, n = revs.length;
+        for(i = 0; i < n; i++) rects[i] = revs[i].getBoundingClientRect();   // batch reads
+        for(i = 0; i < n; i++){                                             // batch writes
+          var r = rects[i], el = revs[i], o;
+          if(r.bottom <= 0 || r.top >= vh){ o = 0; }
+          else { o = ease(Math.min((vh - r.top) / edge, r.bottom / edge)); }
+          if(el.__o !== o){ el.style.opacity = o.toFixed(3); el.__o = o; }
+          var fading = o > 0 && o < 1;
+          if(fading !== !!el.__wc){ el.style.willChange = fading ? 'opacity' : 'auto'; el.__wc = fading; }
         }
-        if(!revs.length){ window.removeEventListener('scroll', onScroll); window.removeEventListener('resize', onScroll); }
       }
-      var last = 0, trailing = null;
-      function onScroll(){
-        var now = Date.now();
-        if(now - last >= 60){ last = now; check(); }
-        else { clearTimeout(trailing); trailing = setTimeout(function(){ last = Date.now(); check(); }, 60); }
-      }
+      var ticking = false;
+      function onScroll(){ if(!ticking){ ticking = true; requestAnimationFrame(function(){ ticking = false; update(); }); } }
       window.addEventListener('scroll', onScroll, { passive: true });
       window.addEventListener('resize', onScroll, { passive: true });
-      check();
-      setTimeout(check, 250); setTimeout(check, 900);
+      update();
+      setTimeout(update, 250); setTimeout(update, 900);
     })();
     (function(){
       var secs = Array.prototype.slice.call(document.querySelectorAll('section.rev'));
