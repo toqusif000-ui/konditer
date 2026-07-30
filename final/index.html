@@ -513,12 +513,26 @@ class Component extends DCLogic {
       window.addEventListener('load', center);
     });
     (function(){
-      var scroller = document.getElementById('fullScroll');
       var revs = Array.prototype.slice.call(document.querySelectorAll('.rev'));
-      if(revs.length && 'IntersectionObserver' in window){
-        var io = new IntersectionObserver(function(es){ es.forEach(function(en){ if(en.isIntersecting){ en.target.classList.add('in'); io.unobserve(en.target); } }); }, { root: scroller || null, threshold: 0.01, rootMargin: '0px 0px -12% 0px' });
-        revs.forEach(function(r){ io.observe(r); });
-      } else { revs.forEach(function(r){ r.classList.add('in'); }); }
+      if(!revs.length) return;
+      function check(){
+        var vh = window.innerHeight || document.documentElement.clientHeight;
+        for(var i = revs.length - 1; i >= 0; i--){
+          var r = revs[i].getBoundingClientRect();
+          if(r.top < vh * 0.86 && r.bottom > 0){ revs[i].classList.add('in'); revs.splice(i, 1); }
+        }
+        if(!revs.length){ window.removeEventListener('scroll', onScroll); window.removeEventListener('resize', onScroll); }
+      }
+      var last = 0, trailing = null;
+      function onScroll(){
+        var now = Date.now();
+        if(now - last >= 60){ last = now; check(); }
+        else { clearTimeout(trailing); trailing = setTimeout(function(){ last = Date.now(); check(); }, 60); }
+      }
+      window.addEventListener('scroll', onScroll, { passive: true });
+      window.addEventListener('resize', onScroll, { passive: true });
+      check();
+      setTimeout(check, 250); setTimeout(check, 900);
     })();
     (function(){
       var secs = Array.prototype.slice.call(document.querySelectorAll('section.rev'));
